@@ -382,6 +382,8 @@ void CMIDI2CDlg::OnBnClickedBucreate()
 	UINT8 lastEvent;
 	UINT32 tick, byteLen;
 	UINT8 byte, eventMark, eventType, eventByteLen;
+	UINT16 timeSignature;
+
 	int i, j;
 	int line;
 	int	totalLine = m_CtrlList.GetItemCount();
@@ -414,13 +416,6 @@ void CMIDI2CDlg::OnBnClickedBucreate()
 				synType = ((UINT16)rdBuff[0] << 8) | (UINT16)rdBuff[1];
 				chNum = ((UINT16)rdBuff[2] << 8) | (UINT16)rdBuff[3];
 				deltaTime = ((UINT16)rdBuff[4] << 8) | (UINT16)rdBuff[5];
-				//str = "//前2个字节是四分音符时间，后3个字节是速度，低字节在前\r\n";
-				//strMidiData += str;
-				//str.Format("0x%02X, 0x%02X, ", (UINT8)deltaTime, (UINT8)(deltaTime >> 8));
-				//strMidiData += str;
-				//timePost = outFile.GetPosition();
-				//str = "                 \r\n";
-				//strMidiData += str;
 				eventCount = 0;
 				while (1)
 				{
@@ -461,16 +456,13 @@ void CMIDI2CDlg::OnBnClickedBucreate()
 								{
 									str.Empty();
 									str = "// tick低位,tick高位,事件,键值,力度\r\n";
-									//outFile.Write(str.GetBuffer(), str.GetLength());
 									strMidiData += str;
 									bNotes = 1;
 								}
 								count += midiFile.Read(rdBuff, 2);
 								str.Empty();
 								str.Format(_T("0x%02X, 0x%02X, 0x%02X, %d, %d,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0], rdBuff[1]);
-								//outFile.Write(str.GetBuffer(), str.GetLength());
 								str += STR_LINEFEED;
-								//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
 								strMidiData += str;
 
 								eventCount++;
@@ -478,54 +470,43 @@ void CMIDI2CDlg::OnBnClickedBucreate()
 							else if ((eventMark & 0xF0) == 0xA0)//触后音符
 							{
 								count += midiFile.Read(rdBuff, 2);
-								str.Empty();
-								str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0], rdBuff[1]);
-								//outFile.Write(str.GetBuffer(), str.GetLength());
-								//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
-								str += STR_LINEFEED;
-								strMidiData += str;
+								//str.Empty();
+								//str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0], rdBuff[1]);
+								//str += STR_LINEFEED;
+								//strMidiData += str;
 							}
 							else if ((eventMark & 0xF0) == 0xB0)//控制器
 							{
 								count += midiFile.Read(rdBuff, 2);
-								str.Empty();
-								str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0], rdBuff[1]);
-								//outFile.Write(str.GetBuffer(), str.GetLength());
-								//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
-								str += STR_LINEFEED;
-								strMidiData += str;
+								//str.Empty();
+								//str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0], rdBuff[1]);
+								//str += STR_LINEFEED;
+								//strMidiData += str;
 
 							}
 							else if ((eventMark & 0xF0) == 0xC0)//改变乐器
 							{
 								count += midiFile.Read(rdBuff, 1);
-								str.Empty();
-								str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0]);
-								//outFile.Write(str.GetBuffer(), str.GetLength());
-								//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
-								str += STR_LINEFEED;
-								strMidiData += str;
+								//str.Empty();
+								//str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0]);
+								//str += STR_LINEFEED;
+								//strMidiData += str;
 							}
 							else if ((eventMark & 0xF0) == 0xD0)//触后通道
 							{
 								count += midiFile.Read(rdBuff, 1);
-								str.Empty();
-								str.Format(_T("// 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0]);
-								//outFile.Write(str.GetBuffer(), str.GetLength());
-								//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
-								str += STR_LINEFEED;
-								strMidiData += str;
+								//str.Empty();
+								//str.Format(_T("// 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0]);
+								//str += STR_LINEFEED;
+								//strMidiData += str;
 							}
 							else if ((eventMark & 0xF0) == 0xE0)//滑音
 							{
 								count += midiFile.Read(rdBuff, 2);
-								str.Empty();
-								str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0], rdBuff[0]);
-								//outFile.Write(str.GetBuffer(), str.GetLength());
-								//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
-								str += STR_LINEFEED;
-								strMidiData += str;
-
+								//str.Empty();
+								//str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, rdBuff[0], rdBuff[0]);
+								//str += STR_LINEFEED;
+								//strMidiData += str;
 							}
 							else if (eventMark == 0xF0)//系统码
 							{
@@ -580,17 +561,14 @@ void CMIDI2CDlg::OnBnClickedBucreate()
 										byteLen |= ((UINT32)rdBuff[j]) << (7 * (i - j));
 									}
 									count += midiFile.Read(rdBuff, byteLen);
-									str.Empty();
-									str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, // "), (UINT8)tick, (UINT8)(tick >> 8), eventMark, eventType);
-									//outFile.Write(str.GetBuffer(), str.GetLength());
-									//outFile.Write(rdBuff, byte);
-									//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
-									strMidiData += str;
-									rdBuff[byte] = 0;
-									str.Empty();
-									str.Format(_T("%s"), rdBuff);
-									str += STR_LINEFEED;
-									strMidiData += str;
+									//str.Empty();
+									//str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, // "), (UINT8)tick, (UINT8)(tick >> 8), eventMark, eventType);
+									//strMidiData += str;
+									//rdBuff[byte] = 0;
+									//str.Empty();
+									//str.Format(_T("%s"), rdBuff);
+									//str += STR_LINEFEED;
+									//strMidiData += str;
 									break;
 								case 0x2F://音轨结束标记，长度0字节
 									bChunkEnd = 1;
@@ -600,22 +578,21 @@ void CMIDI2CDlg::OnBnClickedBucreate()
 									count += midiFile.Read(&byte, 1);//长度
 									count += midiFile.Read(rdBuff, byte & 0x7F);
 									speed4 = ((UINT32)rdBuff[0] << 16) | ((UINT32)rdBuff[1] << 8) | ((UINT32)rdBuff[2] << 0);
-									str.Empty();
-									str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, eventType, rdBuff[0], rdBuff[1], rdBuff[2]);
-									//outFile.Write(str.GetBuffer(), str.GetLength());
-									//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
-									str += STR_LINEFEED;
-									strMidiData += str;
+									//str.Empty();
+									//str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, eventType, rdBuff[0], rdBuff[1], rdBuff[2]);
+									//str += STR_LINEFEED;
+									//strMidiData += str;
 									break;
 								case 0x58://节拍，长度4字节
 									count += midiFile.Read(&byte, 1);//长度
 									count += midiFile.Read(rdBuff, byte & 0x7F);
-									str.Empty();
-									str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, eventType, rdBuff[0], rdBuff[1], rdBuff[2], rdBuff[3]);
-									//outFile.Write(str.GetBuffer(), str.GetLength());
-									//outFile.Write(STR_LINEFEED, STR_LINEFEED_SIZE);
-									str += STR_LINEFEED;
-									strMidiData += str;
+									//str.Empty();
+									//str.Format(_T("// 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X,"), (UINT8)tick, (UINT8)(tick >> 8), eventMark, eventType, rdBuff[0], rdBuff[1], rdBuff[2], rdBuff[3]);
+									//str += STR_LINEFEED;
+									//strMidiData += str;
+									timeSignature = rdBuff[0];
+									timeSignature <<= 8;
+									timeSignature |= rdBuff[1];
 									break;
 								case 0x59://调号，长度2字节
 									count += midiFile.Read(&byte, 1);//长度
@@ -633,25 +610,6 @@ void CMIDI2CDlg::OnBnClickedBucreate()
 					}
 					if (midiFile.GetPosition() >= midiFile.GetLength())
 					{
-						//outFile.Write("};\r\n", 4);
-						//outFile.Seek(enevtPost, CFile::begin);
-						//str.Format("0x%02x,0x%02x,0,0,0,",(UINT8)eventCount, (UINT8)(eventCount >> 8));
-						//outFile.Write(str.GetBuffer(), str.GetLength());
-						//outFile.SeekToEnd();
-						//outFile.Seek(timePost, CFile::begin);//写入速度信息
-						//str.Format("0x%02X, 0x%02X, 0x%02X,", (UINT8)speed4, (UINT8)(speed4 >> 8), (UINT8)(speed4 >> 16));
-						//outFile.Write(str.GetBuffer(), str.GetLength());
-						//outFile.SeekToEnd();
-
-
-						//str = "//前2个字节是四分音符时间，后3个字节是速度，低字节在前\r\n";
-						//strMidiData += str;
-						//str.Format("0x%02X, 0x%02X, ", (UINT8)deltaTime, (UINT8)(deltaTime >> 8));
-						//strMidiData += str;
-						//timePost = outFile.GetPosition();
-						//str = "                 \r\n";
-						//strMidiData += str;
-
 						strMidiName.Empty();//清空字符串
 						str.Empty();
 
@@ -664,10 +622,10 @@ void CMIDI2CDlg::OnBnClickedBucreate()
 						strArrayPointer += str2;
 						strMidiName.Format(_T("const unsigned char MidiEvent_%s[%d][5]=\r\n{\r\n"),str.GetBuffer(),eventCount + 2);
 						str.Empty();
-						str.Format(_T("//前2个字节是四分音符时间，后3个字节是速度，低字节在前\r\n0x%02x, 0x%02x, 0x%02X, 0x%02X, 0x%02X,\r\n"), (UINT8)deltaTime, (UINT8)(deltaTime >> 8), (UINT8)speed4, (UINT8)(speed4 >> 8), (UINT8)(speed4 >> 16));
+						str.Format(_T("//前2个字节是一个四分音符tick数，后3个字节是一个四分音符的微秒数，低字节在前\r\n0x%02x, 0x%02x, 0x%02X, 0x%02X, 0x%02X,\r\n"), (UINT8)deltaTime, (UINT8)(deltaTime >> 8), (UINT8)speed4, (UINT8)(speed4 >> 8), (UINT8)(speed4 >> 16));
 						strMidiName += str;
 						str.Empty();
-						str.Format(_T("//前2个字节事件数量，后3个字节无效\r\n0x%02x, 0x%02x,    0,    0,    0,\r\n"), (UINT8)eventCount, (UINT8)(eventCount >> 8));
+						str.Format(_T("//前2个字节事件数量，第3字节是节拍分子，第4字节是节拍分母\r\n0x%02x, 0x%02x, 0x%02x, 0x%02x,    0,\r\n"), (UINT8)eventCount, (UINT8)(eventCount >> 8),(UINT8)(timeSignature>>8), (UINT8)(timeSignature & 0xFF));
 						strMidiName += str;
 						strOutFile += strMidiName + strMidiData + _T("};\r\n\r\n");
 						break;//到达文件结尾
